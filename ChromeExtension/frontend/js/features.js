@@ -291,6 +291,7 @@ chrome.runtime.sendMessage(result, function(response) {
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
       if (request.action == "alert_user") {
-        console.warn("PhishCatcher Alert: Phishing indicators detected on this page.");
+        console.log("PhishCatcher: Phishing indicators detected for this tab.");
       }
-    });
+    });
+
