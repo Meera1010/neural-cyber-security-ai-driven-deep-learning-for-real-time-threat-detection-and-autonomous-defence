@@ -1,0 +1,48 @@
+{
+  "name": "PhishCatcher",
+  "version": "1.0",
+  "description": "Phishing Detection Browser Plugin",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "webNavigation",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "action": {
+    "default_icon": "icon.png",
+    "default_popup": "plugin_ui.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "js/jquery.js",
+        "js/features.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "static/classifier.json",
+        "static/testdata.json"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+  ],
+  "manifest_version": 3
+}
+
+
