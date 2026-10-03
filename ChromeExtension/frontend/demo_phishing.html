@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Simulated Phishing Attack Page - Security Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .login-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #fee2e2;
+      color: #dc2626;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    h2 { margin: 0 0 8px 0; font-size: 20px; }
+    p { color: #64748b; font-size: 13px; margin: 0 0 24px 0; }
+    .form-group {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+    label { font-size: 12px; font-weight: 600; color: #475569; display: block; margin-bottom: 6px; }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .links {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+    .links a { color: #2563eb; text-decoration: none; }
+  </style>
+
+  <!-- External favicon and scripts from third-party origins (Heuristic 9 & 15) -->
+  <link rel="icon" href="http://192.168.1.1/favicon.ico">
+  <script src="http://example-external-domain.com/tracker.js" onerror="void(0);"></script>
+</head>
+<body>
+
+  <div class="login-card">
+    <span class="badge">Simulated Threat Page</span>
+    <h2>Account Verification Required</h2>
+    <p>Please enter your credentials to confirm your identity.</p>
+
+    <!-- SFH (Server Form Handler) attack indicator: empty form action -->
+    <form action="" method="POST">
+      <div class="form-group">
+        <label>Account Email</label>
+        <input type="text" placeholder="user@example.com" required>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="••••••••" required>
+      </div>
+      <button type="button">Verify Now</button>
+    </form>
+
+    <!-- Mailto form action (Heuristic 16: Submitting to email) -->
+    <form action="mailto:phish-collector@attacker-domain.com" method="POST" style="margin-top: 10px;">
+      <button type="button" style="background: #64748b; font-size: 12px; padding: 6px;">Alternative Mailto Submit</button>
+    </form>
+
+    <!-- Dead / Dummy Anchor Links (Heuristic 14: URL of Anchor) -->
+    <div class="links">
+      <a href="#">Forgot Password?</a>
+      <a href="javascript:void(0)">Help Center</a>
+      <a href="#privacy">Privacy Terms</a>
+    </div>
+  </div>
+
+  <!-- Injected iFrame (Heuristic 17: iFrames check) -->
+  <iframe src="about:blank" style="display:none;" title="hidden-frame"></iframe>
+
+</body>
+</html>

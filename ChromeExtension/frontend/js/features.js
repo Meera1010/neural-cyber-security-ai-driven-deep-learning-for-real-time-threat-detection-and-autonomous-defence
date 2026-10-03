@@ -136,7 +136,12 @@ if(!favicon) {
 }
 //---------------------- 11. Using Non-Standard Port  ----------------------
 
-result["Port"]="-1";
+var currentPort = window.location.port;
+if (currentPort && currentPort !== "" && currentPort !== "80" && currentPort !== "443") {
+    result["Port"] = "1";
+} else {
+    result["Port"] = "-1";
+}
 //---------------------- 12.  HTTPS in URL's domain part  ----------------------
 
 patt=/https/;
@@ -262,7 +267,7 @@ var res = "-1";
 for(var i = 0; i < forms.length; i++) {
     var action = forms[i].getAttribute("action");
     if(!action) continue;
-    if(action.startsWith("mailto")) {
+    if(action.toLowerCase().startsWith("mailto")) {
         res = "1";
         break;
     }
@@ -288,10 +293,44 @@ chrome.runtime.sendMessage(result, function(response) {
 });
 
 
+function showInPageAlert() {
+  if (document.getElementById("phishcatcher-alert-banner")) return;
+
+  var banner = document.createElement("div");
+  banner.id = "phishcatcher-alert-banner";
+  banner.style.cssText = "position: fixed !important; top: 16px !important; right: 16px !important; z-index: 2147483647 !important; background: #0b1120 !important; color: #f1f5f9 !important; border: 2px solid #ef4444 !important; border-radius: 12px !important; box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 20px rgba(239, 68, 68, 0.4) !important; padding: 14px 18px !important; max-width: 380px !important; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important; font-size: 13px !important; line-height: 1.4 !important;";
+
+  banner.innerHTML = [
+    "<div style='display: flex; align-items: flex-start; gap: 12px;'>",
+    "  <div style='background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; min-width: 34px;'>",
+    "    <svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='#ef4444' stroke-width='2.5'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg>",
+    "  </div>",
+    "  <div style='flex: 1;'>",
+    "    <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;'>",
+    "      <strong style='color: #ef4444; font-size: 13px;'>Phishing Threat Warning!</strong>",
+    "      <button id='phishcatcher-close-btn' style='background: none; border: none; color: #94a3b8; font-size: 18px; cursor: pointer; line-height: 1; padding: 0 4px;'>&times;</button>",
+    "    </div>",
+    "    <p style='margin: 0; color: #cbd5e1; font-size: 11px;'>Neural PhishCatcher detected anomalous phishing patterns on this page. Avoid entering credentials or personal info.</p>",
+    "  </div>",
+    "</div>"
+  ].join("");
+
+  document.body.appendChild(banner);
+
+  var closeBtn = document.getElementById("phishcatcher-close-btn");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", function() {
+      banner.remove();
+    });
+  }
+}
+
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
       if (request.action == "alert_user") {
         console.log("PhishCatcher: Phishing indicators detected for this tab.");
+        showInPageAlert();
       }
     });
+
 

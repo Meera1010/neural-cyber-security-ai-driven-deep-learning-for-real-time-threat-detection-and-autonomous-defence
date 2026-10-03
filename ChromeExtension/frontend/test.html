@@ -1,43 +1,321 @@
-<!DOCTYPE>
-<html>
-  <head>
-  
+<!DOCTYPE html>
+<html lang="en">
+<head>
   <meta charset="utf-8">
-  
-  <title>Accuracy</title>
-   
- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
- 
-   <link href="https://fonts.googleapis.com/css?family=Josefin+Sans|Russo+One" rel="stylesheet">
- 
-   <link href="plugin_ui.css" type="text/css" rel="stylesheet">
- 
-   <script src="js/jquery.js" type="text/javascript"></script>
-  
-  <script src="js/randomforest.js" type="text/javascript"></script>
-  
-  <script src="js/test.js" type="text/javascript"></script>
-  
-</head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Evaluation Benchmark - Neural PhishCatcher</title>
+  <style>
+    :root {
+      --bg-primary: #0b1120;
+      --bg-secondary: #111c33;
+      --bg-card: #162444;
+      --border-color: #1f335e;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --color-cyan: #06b6d4;
+      --color-safe: #10b981;
+      --color-risk: #ef4444;
+      --color-amber: #f59e0b;
+    }
 
-  <body>
-  
-  <div id="plugin_name">
-     
- <h1>Results</h1>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      padding: 24px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .benchmark-container {
+      width: 100%;
+      max-width: 640px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .benchmark-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .header-title-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-cyan);
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .header-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .badge-live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--color-safe);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-safe);
+    }
+
+    .info-callout {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px 10px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card.highlight {
+      border-color: rgba(6, 182, 212, 0.4);
+      background: linear-gradient(180deg, rgba(6, 182, 212, 0.1), var(--bg-card));
+    }
+
+    .metric-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Confusion Matrix */
+    .matrix-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .matrix-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .matrix-cell {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cell-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .cell-val {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .cell-val.safe { color: var(--color-safe); }
+    .cell-val.risk { color: var(--color-risk); }
+
+    .benchmark-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .back-link {
+      color: var(--color-cyan);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.2s;
+    }
+
+    .back-link:hover {
+      opacity: 0.8;
+    }
+
+    .status-note {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+  </style>
+  <script src="js/jquery.js" type="text/javascript"></script>
+  <script src="js/randomforest.js" type="text/javascript"></script>
+  <script src="js/test.js" type="text/javascript"></script>
+</head>
+<body>
+  <div class="benchmark-container">
+    <div class="benchmark-header">
+      <div class="header-title-box">
+        <div class="header-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V10M12 20V4M6 20v-6"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Model Evaluation Benchmark</h1>
+          <span class="header-subtitle">Client-Side JavaScript Random Forest Ensemble</span>
+        </div>
+      </div>
+      <div class="badge-live">
+        <span class="dot"></span>
+        <span id="benchmark_status">Computing...</span>
+      </div>
     </div>
-   
- <div style="padding: 2%;">
-     
- <p>Calculated live from testing data</p>
-  
-    <strong>Precision: </strong><p id="precision"></p>
- 
-     <strong>Recall: </strong><p id="recall"></p>
-     
- <strong>F1 score: </strong><p id="accuracy"></p>
+
+    <div class="info-callout">
+      <span><strong>Test Dataset:</strong> 3,317 Out-of-Sample URLs</span>
+      <span><strong>Ensemble:</strong> 10 Decision Trees</span>
     </div>
- 
-   <a href="/plugin_ui.html">Back</a>
-  </body>
+
+    <div class="metrics-grid">
+      <div class="metric-card highlight">
+        <span class="metric-value" id="accuracy_val">--%</span>
+        <span class="metric-label">Accuracy</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-value" id="precision_val">--%</span>
+        <span class="metric-label">Precision</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-value" id="recall_val">--%</span>
+        <span class="metric-label">Recall</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-value" id="f1_val">--%</span>
+        <span class="metric-label">F1 Score</span>
+      </div>
+    </div>
+
+    <!-- Hidden compatibility tags for existing test ids -->
+    <p id="accuracy" style="display:none;"></p>
+    <p id="precision" style="display:none;"></p>
+    <p id="recall" style="display:none;"></p>
+
+    <div class="matrix-section">
+      <div class="matrix-title">
+        <span>Confusion Matrix</span>
+        <span style="font-size: 11px; color: var(--text-muted); font-weight: normal;">Live Prediction Totals</span>
+      </div>
+      <div class="matrix-grid">
+        <div class="matrix-cell">
+          <span class="cell-label">True Positives (TP)</span>
+          <span class="cell-val safe" id="val_tp">--</span>
+        </div>
+        <div class="matrix-cell">
+          <span class="cell-label">True Negatives (TN)</span>
+          <span class="cell-val safe" id="val_tn">--</span>
+        </div>
+        <div class="matrix-cell">
+          <span class="cell-label">False Positives (FP)</span>
+          <span class="cell-val risk" id="val_fp">--</span>
+        </div>
+        <div class="matrix-cell">
+          <span class="cell-label">False Negatives (FN)</span>
+          <span class="cell-val risk" id="val_fn">--</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="benchmark-footer">
+      <a href="plugin_ui.html" class="back-link">
+        &larr; Back to Extension Popup
+      </a>
+      <span class="status-note" id="calc_time">Evaluated in pure JavaScript</span>
+    </div>
+  </div>
+</body>
 </html>

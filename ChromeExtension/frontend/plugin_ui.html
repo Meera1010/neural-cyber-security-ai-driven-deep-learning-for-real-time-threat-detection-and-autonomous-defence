@@ -1,25 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>PhishCatcher</title>
-  <link href="https://fonts.googleapis.com/css?family=Josefin+Sans|Russo+One" rel="stylesheet"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neural Cyber Security - PhishCatcher</title>
   <link href="plugin_ui.css" type="text/css" rel="stylesheet">    
 </head>
 <body>
-  <div id="plugin_name">
-    <h1>PhishCatcher</h1>
+  <div class="plugin-container">
+    <!-- Header -->
+    <header class="plugin-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Neural PhishCatcher</h1>
+          <span class="brand-subtitle">AI Real-Time Threat Detection</span>
+        </div>
+      </div>
+      <div class="status-indicator live" title="Model active">
+        <span class="pulse-dot"></span>
+        <span class="status-text">LIVE</span>
+      </div>
+    </header>
+
+    <!-- Current URL Domain -->
+    <div class="domain-card" id="domain_card">
+      <span class="domain-label">Target Host:</span>
+      <span class="domain-text" id="site_domain">Scanning current tab...</span>
+    </div>
+
+    <!-- Gauge / Score Section -->
+    <section class="gauge-section">
+      <div class="score-ring" id="res-circle">
+        <div class="score-inner">
+          <span class="score-number" id="site_score">--%</span>
+          <span class="score-caption">SAFETY SCORE</span>
+        </div>
+      </div>
+
+      <div class="verdict-box">
+        <h2 id="site_msg" class="verdict-title">Analyzing...</h2>
+        <p id="site_msg1" class="verdict-desc">Extracting browser DOM and URL security heuristics.</p>
+      </div>
+    </section>
+
+    <!-- Metrics Breakdown Pills -->
+    <div class="metrics-bar">
+      <div class="metric-pill safe">
+        <span class="metric-count" id="count_safe">0</span>
+        <span class="metric-label">Safe</span>
+      </div>
+      <div class="metric-pill suspicious">
+        <span class="metric-count" id="count_suspicious">0</span>
+        <span class="metric-label">Suspicious</span>
+      </div>
+      <div class="metric-pill risk">
+        <span class="metric-count" id="count_risk">0</span>
+        <span class="metric-label">Threats</span>
+      </div>
+    </div>
+
+    <!-- Heuristics Inspection -->
+    <section class="heuristics-section">
+      <div class="heuristics-header">
+        <h3>17 Heuristic Neural Checks</h3>
+        <span class="heuristic-legend">Pure JS Random Forest</span>
+      </div>
+      <ul id="features" class="heuristics-list">
+        <li class="loading-state">Evaluating client-side security features...</li>
+      </ul>
+    </section>
+
+    <!-- Footer Action Toolbar -->
+    <footer class="plugin-footer">
+      <a href="test.html" target="_blank" class="benchmark-btn" id="btn_benchmark">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 20V10M12 20V4M6 20v-6"/>
+        </svg>
+        Model Benchmark
+      </a>
+      <button class="rescan-btn" id="btn_rescan" title="Re-evaluate page security">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+        </svg>
+        Re-Scan
+      </button>
+    </footer>
   </div>
-
-  <div class="rounded-circle" id="res-circle"> 
-    <h1 id="site_score">100%</h1>
-  </div>  
-
-  <h2 id="site_msg">Safe to use</h2>
-  <h3 id="site_msg1"></h3>
-  <ul id="features"></ul>
 
   <script src="js/jquery.js" type="text/javascript"></script>
   <script src="js/plugin_ui.js" type="text/javascript"></script>
 </body>
-</html>
+</html>
